@@ -4,8 +4,9 @@ import java.sql.*;
 
 public class DataStorage {
 	private Connection c = null;
+	private static CoreWindow coreWindow;
 
-	public DataStorage() {
+	public DataStorage(CoreWindow cw) {
 
 		try {
 			Class.forName("org.sqlite.JDBC");
@@ -15,6 +16,7 @@ public class DataStorage {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 			
 		}
+		coreWindow = cw;
 	}
 
 	public void CreateDatabase() {
@@ -33,6 +35,10 @@ public class DataStorage {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 			System.exit(0);
 		}
+	}
+	
+	public void GetData (String S){
+		coreWindow.GetData(S);
 	}
 
 }

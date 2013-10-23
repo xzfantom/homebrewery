@@ -8,13 +8,15 @@ import jssc.SerialPortException;
 public class COMTalker {
 	private static SerialPort serialPort;
 	private boolean isConnected = false;
+	private static DataStorage dataStorage;
 
 	public COMTalker() {
 		//Do nothing yet
 	}
 	
-	public COMTalker(String SerialPortNumber) {
+	public COMTalker(String SerialPortNumber, DataStorage ds) {
 		connect(SerialPortNumber);
+		dataStorage = ds;
 	}
 	
 	public boolean isConnected() {
@@ -37,6 +39,7 @@ public class COMTalker {
 					SerialPort.MASK_RXCHAR);
 			serialPort.writeString("status;");
 			isConnected = true;
+			System.out.println("Opened serial connection successfully");
 		} catch (SerialPortException ex) {
 			System.out.println(ex);
 		}	
@@ -62,8 +65,9 @@ public class COMTalker {
 			if (event.isRXCHAR() && event.getEventValue() > 0) {
 				try {
 					String data = serialPort.readString(event.getEventValue());
-					serialPort.writeString("status;");
+					//serialPort.writeString("status;");
 					System.out.println(data);
+					dataStorage.GetData(data);
 				} catch (SerialPortException ex) {
 					System.out.println(ex);
 				}

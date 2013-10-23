@@ -20,9 +20,10 @@ import javax.swing.border.LineBorder;
 public class CoreWindow extends JFrame {
 
 	private static final long serialVersionUID = 1L;
+	private JTextArea textArea = new JTextArea();
 
 	public CoreWindow() {
-
+		
         initUI();
     }
 
@@ -43,7 +44,6 @@ public class CoreWindow extends JFrame {
         toolbar.add(bexit);
 
         add(toolbar, BorderLayout.NORTH);
-
         JToolBar vertical = new JToolBar(JToolBar.VERTICAL);
         vertical.setFloatable(false);
         vertical.setMargin(new Insets(10, 5, 5, 5));
@@ -66,7 +66,9 @@ public class CoreWindow extends JFrame {
 
         add(vertical, BorderLayout.WEST);
 
-        add(new JTextArea(), BorderLayout.CENTER);
+        //JTextArea textArea = new JTextArea();
+        add(textArea, BorderLayout.CENTER);
+        //textArea.append("Test");
 
         JLabel statusbar = new JLabel(" Statusbar");
         statusbar.setPreferredSize(new Dimension(-1, 22));
@@ -79,7 +81,9 @@ public class CoreWindow extends JFrame {
         setLocationRelativeTo(null);
     }
 
-
+    public void GetData(String S){
+    	textArea.append(S);
+    }
 }
 
 
