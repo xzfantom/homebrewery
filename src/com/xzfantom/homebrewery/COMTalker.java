@@ -7,39 +7,62 @@ import jssc.SerialPortException;
 
 public class COMTalker {
 	private static SerialPort serialPort;
+	private boolean isConnected = false;
 
+	public COMTalker() {
+		//Do nothing yet
+	}
+	
 	public COMTalker(String SerialPortNumber) {
-		// Передаём в конструктор имя порта
+		connect(SerialPortNumber);
+	}
+	
+	public boolean isConnected() {
+		return isConnected;
+	}
+	
+	public boolean connect (String SerialPortNumber)
+	{
+		isConnected = false;
+		
 		serialPort = new SerialPort(SerialPortNumber);
 		try {
-			// Открываем порт
 			serialPort.openPort();
-			// Выставляем параметры
 			serialPort.setParams(SerialPort.BAUDRATE_9600,
 					SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
 					SerialPort.PARITY_NONE);
-			// Включаем аппаратное управление потоком
 			serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN
 					| SerialPort.FLOWCONTROL_RTSCTS_OUT);
-			// Устанавливаем ивент лисенер и маску
 			serialPort.addEventListener(new PortReader(),
 					SerialPort.MASK_RXCHAR);
-			// Отправляем запрос устройству
-			serialPort.writeString("Get data");
+			serialPort.writeString("status;");
+			isConnected = true;
 		} catch (SerialPortException ex) {
 			System.out.println(ex);
-		}
+		}	
+		return isConnected;
 	}
+	
+	public boolean disconnect() {
+		if (isConnected){
+			try {
+				isConnected = !serialPort.closePort();
+			} catch (SerialPortException ex) {
+				System.out.println(ex);
+			}			
+		}
+		return isConnected;
+	}
+	
+
 
 	private static class PortReader implements SerialPortEventListener {
 
 		public void serialEvent(SerialPortEvent event) {
 			if (event.isRXCHAR() && event.getEventValue() > 0) {
 				try {
-					// Получаем ответ от устройства, обрабатываем данные и т.д.
 					String data = serialPort.readString(event.getEventValue());
-					// И снова отправляем запрос
-					serialPort.writeString("Get data");
+					serialPort.writeString("status;");
 					System.out.println(data);
 				} catch (SerialPortException ex) {
 					System.out.println(ex);
