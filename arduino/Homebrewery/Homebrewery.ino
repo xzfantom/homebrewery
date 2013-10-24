@@ -24,6 +24,7 @@ double Setpoint, Input, Output;
 PID myPID(&Input, &Output, &Setpoint,2,5,1, DIRECT);
 int WindowSize = 5000;
 unsigned long windowStartTime;
+unsigned long now;
 
 
 void setup(void) {
@@ -55,6 +56,8 @@ void loop(void) {
   byte i;
   byte present = 0;
   byte data[12];
+  
+  now = millis();
 
   if ( OneWire::crc8( Addr, 7) != Addr[7]) {
     Serial.print("CRC is not valid!\n");
@@ -81,7 +84,7 @@ void loop(void) {
   Ds.select(Addr);
   Ds.write(0x44,1);         // start conversion, with parasite power on at the end
 
-  delay(1000);     // maybe 750ms is enough, maybe not //there's no need in parasite power
+  //delay(1000);     // maybe 750ms is enough, maybe not //there's no need in parasite power
 
   present = Ds.reset();
   Ds.select(Addr);    
@@ -120,7 +123,7 @@ void loop(void) {
   OutputString = OutputString + ";\n";
   Lcd.clear();
   Lcd.print(OutputString);
-  Serial.print(OutputString);
+  //Serial.print(OutputString);
 
   //Checking for input data
   if (StringComplete == true)
@@ -174,17 +177,7 @@ void loop(void) {
       }
       else if (command == "status")
       {
-        Serial.print("Mode = ");
-        Serial.print(Mode);
-        Serial.print("; t1 = ");
-        Serial.print(t1);
-        Serial.print("; t2 = ");
-        Serial.print(t2);
-        Serial.print("; pt = ");
-        Serial.print(pt);
-        Serial.print("; Tc_100 = ");
-        Serial.print(Tc_100);
-        Serial.print('\n');
+        sendStatus();
       }
     }
     StringComplete = false;
@@ -217,7 +210,7 @@ void loop(void) {
     Input = Tc_100;
     Setpoint = t1*100;
     myPID.Compute();
-    unsigned long now = millis();
+    
     if(now - windowStartTime>WindowSize)
     { //time to shift the Relay Window
       windowStartTime += WindowSize;
@@ -247,7 +240,7 @@ void serialEvent() {
   {
     // get the new byte:
     char inChar = (char)Serial.read();
-    Serial.print(inChar);
+    //Serial.print(inChar);
     // add it to the inputString:
     InputString += inChar;
     // if the incoming character is a newline, set a flag
@@ -255,9 +248,30 @@ void serialEvent() {
     if (inChar == ';') 
     {
       StringComplete = true;
-      Serial.print(" : OK!\n");
     }
   }
+}
+
+void sendStatus() {
+  Serial.print("Mode = ");
+  Serial.print(Mode);
+  Serial.print("; t1 = ");
+  Serial.print(t1);
+  Serial.print("; t2 = ");
+  Serial.print(t2);
+  Serial.print("; pt = ");
+  Serial.print(pt);
+  Serial.print("; Tc_100 = ");
+  Serial.print(Tc_100);
+  Serial.print("; time = ");
+  Serial.print(now);
+  Serial.print("; Ten = ");
+  if (TenTurnedOn) {
+    Serial.print("1");
+  } else {
+    Serial.print("0");
+  }
+  Serial.print(';\n');
 }
 
 /*

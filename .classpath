@@ -2,7 +2,11 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="libraries/jssc.jar" sourcepath="libraries/src/jssc-2.6.0-src.jar"/>
+	<classpathentry kind="lib" path="libraries/jssc.jar" sourcepath="libraries/src/jssc-2.6.0-src.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/homebrewery/libraries/javadoc/jssc-2.6.0-javadoc.jar!/javadoc"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="libraries/sqlite-jdbc-3.7.15-M1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

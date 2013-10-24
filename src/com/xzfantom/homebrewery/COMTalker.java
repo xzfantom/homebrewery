@@ -12,31 +12,30 @@ public class COMTalker {
 	private String SerialPortNumber;
 
 	public COMTalker() {
-		//Do nothing yet
+		// Do nothing yet
 	}
-	
+
 	public COMTalker(String SPN, DataStorage ds) {
 		SerialPortNumber = SPN;
 		dataStorage = ds;
 	}
-	
-	public void setSPN (String SPN) {
+
+	public void setSPN(String SPN) {
 		SerialPortNumber = SPN;
 	}
-	
-	public void setDS (DataStorage ds) {
+
+	public void setDS(DataStorage ds) {
 		dataStorage = ds;
 	}
-	
+
 	public boolean IsConnected() {
 		return isConnected;
 	}
-	
-	public boolean Connect (String SPN)
-	{
+
+	public boolean Connect(String SPN) {
 		isConnected = false;
 		SerialPortNumber = SPN;
-		
+
 		serialPort = new SerialPort(SerialPortNumber);
 		try {
 			serialPort.openPort();
@@ -52,26 +51,38 @@ public class COMTalker {
 			System.out.println("Opened serial connection successfully");
 		} catch (SerialPortException ex) {
 			System.out.println(ex);
-		}	
+		}
 		return isConnected;
 	}
-	
-	public boolean Connect () {
-		return Connect (SerialPortNumber);
+
+	public boolean Connect() {
+		return Connect(SerialPortNumber);
 	}
-	
+
 	public boolean Disconnect() {
-		if (isConnected){
+		if (isConnected) {
 			try {
 				isConnected = !serialPort.closePort();
 			} catch (SerialPortException ex) {
 				System.out.println(ex);
-			}			
+			}
 		}
 		return isConnected;
 	}
 	
-
+	public boolean SendMessage(String S) {
+		boolean result = false;
+		if (isConnected) {
+			try{
+				result = serialPort.writeString(S);
+			} catch (SerialPortException ex) {
+				System.err.println(ex);
+				result = false;
+			}
+		} 
+		
+		return result;
+	}
 
 	private static class PortReader implements SerialPortEventListener {
 
@@ -79,7 +90,7 @@ public class COMTalker {
 			if (event.isRXCHAR() && event.getEventValue() > 0) {
 				try {
 					String data = serialPort.readString(event.getEventValue());
-					//serialPort.writeString("status;");
+					// serialPort.writeString("status;");
 					System.out.println(data);
 					dataStorage.GetData(data);
 				} catch (SerialPortException ex) {

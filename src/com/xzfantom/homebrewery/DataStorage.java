@@ -10,18 +10,18 @@ public class DataStorage {
 
 		coreWindow = cw;
 	}
-	
-	public DataStorage () {
-		
+
+	public DataStorage() {
+
 	}
-	
-	public void setCoreWindow (CoreWindow cw){
+
+	public void setCoreWindow(CoreWindow cw) {
 		coreWindow = cw;
 	}
-	
+
 	public boolean Connect() {
 		boolean result;
-		
+
 		try {
 			Class.forName("org.sqlite.JDBC");
 			c = DriverManager.getConnection("jdbc:sqlite:homebrewery.db");
@@ -42,8 +42,7 @@ public class DataStorage {
 					+ "(ID INT PRIMARY KEY     NOT NULL, "
 					+ " NAME           TEXT    NOT NULL, "
 					+ " AGE            INT     NOT NULL, "
-					+ " ADDRESS        CHAR(50), " 
-					+ " SALARY         REAL)";
+					+ " ADDRESS        CHAR(50), " + " SALARY         REAL)";
 			stmt.executeUpdate(sql);
 			stmt.close();
 		} catch (Exception e) {
@@ -51,8 +50,8 @@ public class DataStorage {
 			System.exit(0);
 		}
 	}
-	
-	public void GetData (String S){
+
+	public void GetData(String S) {
 		coreWindow.GetData(S);
 	}
 

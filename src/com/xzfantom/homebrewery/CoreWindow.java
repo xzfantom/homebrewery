@@ -16,7 +16,6 @@ import javax.swing.JToolBar;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
-
 public class CoreWindow extends JFrame {
 
 	private static final long serialVersionUID = 1L;
@@ -24,72 +23,69 @@ public class CoreWindow extends JFrame {
 	private JTextArea textArea = new JTextArea();
 
 	public CoreWindow() {
-		
-        initUI();
-    }
 
-    public final void initUI() {
+		initUI();
+	}
 
-        JMenuBar menubar = new JMenuBar();
-        JMenu file = new JMenu("File");
+	public final void initUI() {
 
-        menubar.add(file);
-        setJMenuBar(menubar);
+		JMenuBar menubar = new JMenuBar();
+		JMenu file = new JMenu("File");
 
-        JToolBar toolbar = new JToolBar();
-        toolbar.setFloatable(false);
+		menubar.add(file);
+		setJMenuBar(menubar);
 
-        ImageIcon exit = new ImageIcon("resources/exit.png");
-        JButton bexit = new JButton(exit);
-        bexit.setBorder(new EmptyBorder(0 ,0, 0, 0));
-        toolbar.add(bexit);
+		JToolBar toolbar = new JToolBar();
+		toolbar.setFloatable(false);
 
-        add(toolbar, BorderLayout.NORTH);
-        JToolBar vertical = new JToolBar(JToolBar.VERTICAL);
-        vertical.setFloatable(false);
-        vertical.setMargin(new Insets(10, 5, 5, 5));
+		ImageIcon exit = new ImageIcon("resources/exit.png");
+		JButton bexit = new JButton(exit);
+		bexit.setBorder(new EmptyBorder(0, 0, 0, 0));
+		toolbar.add(bexit);
 
-        ImageIcon select = new ImageIcon("resources/drive.png");
-        ImageIcon freehand = new ImageIcon("resources/computer.png");
-        ImageIcon shapeed = new ImageIcon("resources/printer.png");
+		add(toolbar, BorderLayout.NORTH);
+		JToolBar vertical = new JToolBar(JToolBar.VERTICAL);
+		vertical.setFloatable(false);
+		vertical.setMargin(new Insets(10, 5, 5, 5));
 
-        JButton selectb = new JButton(select);
-        selectb.setBorder(new EmptyBorder(3, 0, 3, 0));
+		ImageIcon select = new ImageIcon("resources/drive.png");
+		ImageIcon freehand = new ImageIcon("resources/computer.png");
+		ImageIcon shapeed = new ImageIcon("resources/printer.png");
 
-        JButton freehandb = new JButton(freehand);
-        freehandb.setBorder(new EmptyBorder(3, 0, 3, 0));
-        JButton shapeedb = new JButton(shapeed);
-        shapeedb.setBorder(new EmptyBorder(3, 0, 3, 0));
+		JButton selectb = new JButton(select);
+		selectb.setBorder(new EmptyBorder(3, 0, 3, 0));
 
-        vertical.add(selectb);
-        vertical.add(freehandb);
-        vertical.add(shapeedb);
+		JButton freehandb = new JButton(freehand);
+		freehandb.setBorder(new EmptyBorder(3, 0, 3, 0));
+		JButton shapeedb = new JButton(shapeed);
+		shapeedb.setBorder(new EmptyBorder(3, 0, 3, 0));
 
-        add(vertical, BorderLayout.WEST);
+		vertical.add(selectb);
+		vertical.add(freehandb);
+		vertical.add(shapeedb);
 
-        //JTextArea textArea = new JTextArea();
-        add(textArea, BorderLayout.CENTER);
-        //textArea.append("Test");
+		add(vertical, BorderLayout.WEST);
 
-        JLabel statusbar = new JLabel(" Statusbar");
-        statusbar.setPreferredSize(new Dimension(-1, 22));
-        statusbar.setBorder(LineBorder.createGrayLineBorder());
-        add(statusbar, BorderLayout.SOUTH);
+		// JTextArea textArea = new JTextArea();
+		add(textArea, BorderLayout.CENTER);
+		// textArea.append("Test");
 
-        setSize(350, 300);
-        setTitle("BorderLayout");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-    }
+		JLabel statusbar = new JLabel(" Statusbar");
+		statusbar.setPreferredSize(new Dimension(-1, 22));
+		statusbar.setBorder(LineBorder.createGrayLineBorder());
+		add(statusbar, BorderLayout.SOUTH);
 
-    public void GetData(String S){
-    	textArea.append(S);
-    }
-    
-    public void SetCOMTalker(COMTalker ct) {
-    	comTalker = ct;
-    }
+		setSize(350, 300);
+		setTitle("BorderLayout");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setLocationRelativeTo(null);
+	}
+
+	public void GetData(String S) {
+		textArea.append(S);
+	}
+
+	public void SetCOMTalker(COMTalker ct) {
+		comTalker = ct;
+	}
 }
-
-
-
