@@ -8,15 +8,30 @@ public class DataStorage {
 
 	public DataStorage(CoreWindow cw) {
 
+		coreWindow = cw;
+	}
+	
+	public DataStorage () {
+		
+	}
+	
+	public void setCoreWindow (CoreWindow cw){
+		coreWindow = cw;
+	}
+	
+	public boolean Connect() {
+		boolean result;
+		
 		try {
 			Class.forName("org.sqlite.JDBC");
 			c = DriverManager.getConnection("jdbc:sqlite:homebrewery.db");
 			System.out.println("Opened database successfully");
+			result = true;
 		} catch (Exception e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
-			
+			result = false;
 		}
-		coreWindow = cw;
+		return result;
 	}
 
 	public void CreateDatabase() {

@@ -9,23 +9,33 @@ public class COMTalker {
 	private static SerialPort serialPort;
 	private boolean isConnected = false;
 	private static DataStorage dataStorage;
+	private String SerialPortNumber;
 
 	public COMTalker() {
 		//Do nothing yet
 	}
 	
-	public COMTalker(String SerialPortNumber, DataStorage ds) {
-		connect(SerialPortNumber);
+	public COMTalker(String SPN, DataStorage ds) {
+		SerialPortNumber = SPN;
 		dataStorage = ds;
 	}
 	
-	public boolean isConnected() {
+	public void setSPN (String SPN) {
+		SerialPortNumber = SPN;
+	}
+	
+	public void setDS (DataStorage ds) {
+		dataStorage = ds;
+	}
+	
+	public boolean IsConnected() {
 		return isConnected;
 	}
 	
-	public boolean connect (String SerialPortNumber)
+	public boolean Connect (String SPN)
 	{
 		isConnected = false;
+		SerialPortNumber = SPN;
 		
 		serialPort = new SerialPort(SerialPortNumber);
 		try {
@@ -46,7 +56,11 @@ public class COMTalker {
 		return isConnected;
 	}
 	
-	public boolean disconnect() {
+	public boolean Connect () {
+		return Connect (SerialPortNumber);
+	}
+	
+	public boolean Disconnect() {
 		if (isConnected){
 			try {
 				isConnected = !serialPort.closePort();

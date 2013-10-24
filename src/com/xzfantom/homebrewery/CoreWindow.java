@@ -20,6 +20,7 @@ import javax.swing.border.LineBorder;
 public class CoreWindow extends JFrame {
 
 	private static final long serialVersionUID = 1L;
+	private static COMTalker comTalker;
 	private JTextArea textArea = new JTextArea();
 
 	public CoreWindow() {
@@ -83,6 +84,10 @@ public class CoreWindow extends JFrame {
 
     public void GetData(String S){
     	textArea.append(S);
+    }
+    
+    public void SetCOMTalker(COMTalker ct) {
+    	comTalker = ct;
     }
 }
 
