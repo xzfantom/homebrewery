@@ -5,6 +5,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -60,6 +62,11 @@ public class CoreWindow extends JFrame {
 
 		JButton selectb = new JButton(select);
 		selectb.setBorder(new EmptyBorder(3, 0, 3, 0));
+		selectb.addActionListener(new ActionListener() {
+             public void actionPerformed(ActionEvent e) {
+                  statusbar.setText("Action!");
+             }
+        });
 
 		JButton freehandb = new JButton(freehand);
 		freehandb.setBorder(new EmptyBorder(3, 0, 3, 0));
@@ -73,14 +80,20 @@ public class CoreWindow extends JFrame {
 		add(vertical, BorderLayout.WEST);
 		
 		JTabbedPane tabbedPane = new JTabbedPane();
+		
 		JComponent graphicPanel = makeTextPanel("graphic panel");
 		graphicPanel.add(textArea, BorderLayout.CENTER);
 		tabbedPane.addTab("Graphic", graphicPanel);
+		
+		JComponent consolePanel = makeTextPanel("console panel");
+		//graphicPanel.add(textArea, BorderLayout.CENTER);
+		tabbedPane.addTab("Console", consolePanel);
+		
+		JComponent settingsPanel = makeTextPanel("settings panel");
+		//graphicPanel.add(textArea, BorderLayout.CENTER);
+		tabbedPane.addTab("Settings", settingsPanel);
+		
 		add(tabbedPane, BorderLayout.CENTER);
-		// JTextArea textArea = new JTextArea();
-		//add(textArea, BorderLayout.CENTER);
-		// textArea.append("Test");
-
 		
 		statusbar.setPreferredSize(new Dimension(-1, 22));
 		statusbar.setBorder(LineBorder.createGrayLineBorder());
