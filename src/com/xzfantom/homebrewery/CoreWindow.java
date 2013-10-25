@@ -3,24 +3,30 @@ package com.xzfantom.homebrewery;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.Insets;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JToolBar;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+
 
 public class CoreWindow extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private static COMTalker comTalker;
 	private JTextArea textArea = new JTextArea();
+	private JLabel statusbar = new JLabel(" Statusbar");
 
 	public CoreWindow() {
 
@@ -65,12 +71,17 @@ public class CoreWindow extends JFrame {
 		vertical.add(shapeedb);
 
 		add(vertical, BorderLayout.WEST);
-
+		
+		JTabbedPane tabbedPane = new JTabbedPane();
+		JComponent graphicPanel = makeTextPanel("graphic panel");
+		graphicPanel.add(textArea, BorderLayout.CENTER);
+		tabbedPane.addTab("Graphic", graphicPanel);
+		add(tabbedPane, BorderLayout.CENTER);
 		// JTextArea textArea = new JTextArea();
-		add(textArea, BorderLayout.CENTER);
+		//add(textArea, BorderLayout.CENTER);
 		// textArea.append("Test");
 
-		JLabel statusbar = new JLabel(" Statusbar");
+		
 		statusbar.setPreferredSize(new Dimension(-1, 22));
 		statusbar.setBorder(LineBorder.createGrayLineBorder());
 		add(statusbar, BorderLayout.SOUTH);
@@ -88,4 +99,16 @@ public class CoreWindow extends JFrame {
 	public void SetCOMTalker(COMTalker ct) {
 		comTalker = ct;
 	}
+	
+	private void SendData(String S){
+		comTalker.SendMessage(S);
+	}
+	
+	protected JComponent makeTextPanel(String text) {
+        JPanel panel = new JPanel(false);
+        
+        panel.setLayout(new GridLayout(1, 1));
+        
+        return panel;
+    }
 }

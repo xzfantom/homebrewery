@@ -7,7 +7,6 @@ import jssc.SerialPortException;
 
 public class COMTalker {
 	private static SerialPort serialPort;
-	private boolean isConnected = false;
 	private static DataStorage dataStorage;
 	private String SerialPortNumber;
 
@@ -29,11 +28,10 @@ public class COMTalker {
 	}
 
 	public boolean IsConnected() {
-		return isConnected;
+		return serialPort.isOpened();
 	}
 
 	public boolean Connect(String SPN) {
-		isConnected = false;
 		SerialPortNumber = SPN;
 
 		serialPort = new SerialPort(SerialPortNumber);
@@ -47,12 +45,11 @@ public class COMTalker {
 			serialPort.addEventListener(new PortReader(),
 					SerialPort.MASK_RXCHAR);
 			serialPort.writeString("status;");
-			isConnected = true;
 			System.out.println("Opened serial connection successfully");
 		} catch (SerialPortException ex) {
 			System.out.println(ex);
 		}
-		return isConnected;
+		return serialPort.isOpened();
 	}
 
 	public boolean Connect() {
@@ -60,19 +57,19 @@ public class COMTalker {
 	}
 
 	public boolean Disconnect() {
-		if (isConnected) {
+		if (serialPort.isOpened()) {
 			try {
-				isConnected = !serialPort.closePort();
+				serialPort.closePort();
 			} catch (SerialPortException ex) {
 				System.out.println(ex);
 			}
 		}
-		return isConnected;
+		return !serialPort.isOpened();
 	}
 	
 	public boolean SendMessage(String S) {
 		boolean result = false;
-		if (isConnected) {
+		if (serialPort.isOpened()) {
 			try{
 				result = serialPort.writeString(S);
 			} catch (SerialPortException ex) {
