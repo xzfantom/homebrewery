@@ -6,7 +6,7 @@
 OneWire Ds(11);  // on pin 11
 int TenPin = 2;
 LiquidCrystal Lcd(8, 9, 4, 5, 6, 7); //Display
-int HighByte, LowByte, TReading, SignBit, Tc_100, Whole, Fract; //Readings from OneWire
+int HighByte, LowByte, TReading, SignBit, Tc_100, Whole, Fract, oldTc_100; //Readings from OneWire
 byte Addr[8]; //Adres of OneWire temperature sensor
 String OutputString; //String fo output on Serial
 int LowTemp, HighTemp; //Values for thermostat
@@ -25,6 +25,9 @@ PID myPID(&Input, &Output, &Setpoint,2,5,1, DIRECT);
 int WindowSize = 5000;
 unsigned long windowStartTime;
 unsigned long now;
+unsigned long timeForSensor;
+boolean SensorConversionStarted = false;
+boolean sensorFound = false;
 
 
 void setup(void) {
@@ -43,6 +46,9 @@ void setup(void) {
   pinMode(TenPin, OUTPUT); 
 
   //PID regulator
+  digitalWrite(TenPin,HIGH);
+      TenTurnedOn = false;
+  
   windowStartTime = millis();
   //initialize the variables we're linked to
   Setpoint = 100;
@@ -56,80 +62,14 @@ void loop(void) {
   byte i;
   byte present = 0;
   byte data[12];
-  
+
   now = millis();
-
-  if ( OneWire::crc8( Addr, 7) != Addr[7]) {
-    Serial.print("CRC is not valid!\n");
-    return;
-  }
-  if (ErrorCode == 100)
-  {
-    Serial.print("No temperature sensors!\n");
-    if ( !Ds.search(Addr)) 
-    {
-      Ds.reset_search();
-      ErrorCode = 100;
-      // return;
-    }
-    else
-    {
-      ErrorCode = 0;
-    }
-  }
-  if ( !Ds.search(Addr)) {
-    Ds.reset_search();
-  }
-  Ds.reset();
-  Ds.select(Addr);
-  Ds.write(0x44,1);         // start conversion, with parasite power on at the end
-
-  //delay(1000);     // maybe 750ms is enough, maybe not //there's no need in parasite power
-
-  present = Ds.reset();
-  Ds.select(Addr);    
-  Ds.write(0xBE);         // Read Scratchpad
-
-  for ( i = 0; i < 9; i++) {           // we need 9 bytes
-    data[i] = Ds.read();
-  }
-  LowByte = data[0];
-  HighByte = data[1];
-  TReading = (HighByte << 8) + LowByte;
-  SignBit = TReading & 0x8000;  // test most sig bit
-  if (SignBit) // negative
-  {
-    TReading = (TReading ^ 0xffff) + 1; // 2's comp
-  }
-  Tc_100 = (6 * TReading) + TReading / 4;    // multiply by (100 * 0.0625) or 6.25
-  Whole = Tc_100 / 100;  // separate off the whole and fractional portions
-  Fract = Tc_100 % 100;
-
-  //Formatting output information
-  OutputString = String("");
-  OutputString = OutputString + ":";
-
-  if (SignBit) // If its negative
-  {
-    OutputString = OutputString +"-";
-  }
-  OutputString = OutputString + Whole;
-  OutputString = OutputString + ".";
-  if (Fract < 10)
-  {
-    OutputString = OutputString +"0";
-  }
-  OutputString = OutputString + Fract;
-  OutputString = OutputString + ";\n";
-  Lcd.clear();
-  Lcd.print(OutputString);
-  //Serial.print(OutputString);
-
-  //Checking for input data
+  
+   //Checking for input data
   if (StringComplete == true)
   {
     int eop;
-    Serial.print(InputString);
+//    Serial.print(InputString);
     String part, command, value;
     //Getting information from input string    
     while (InputString != "")
@@ -179,6 +119,10 @@ void loop(void) {
       {
         sendStatus();
       }
+      else if (command == "reset_sensor")
+      {
+        sensorFound = false;
+      }
     }
     StringComplete = false;
   }
@@ -187,30 +131,30 @@ void loop(void) {
   {
     //Turn off heater
     digitalWrite(TenPin, HIGH);
+    TenTurnedOn = false;
   }
   else if (Mode == 1)
   {
-    //Set thermostat
+    //Turn on heater
     digitalWrite(TenPin, LOW);
     TenTurnedOn = true;
-    Serial.print("Mode = 2");
   } 
   else if (Mode == 2)
   {
     /*if (t1 * 100 > Tc_100)
-    {
-      digitalWrite(TenPin, LOW);
-      TenTurnedOn = true;
-    }
-    else
-    {
-      digitalWrite(TenPin, HIGH);
-      TenTurnedOn = false;
-    } */   
+     {
+     digitalWrite(TenPin, LOW);
+     TenTurnedOn = true;
+     }
+     else
+     {
+     digitalWrite(TenPin, HIGH);
+     TenTurnedOn = false;
+     } */
     Input = Tc_100;
     Setpoint = t1*100;
     myPID.Compute();
-    
+
     if(now - windowStartTime>WindowSize)
     { //time to shift the Relay Window
       windowStartTime += WindowSize;
@@ -227,6 +171,94 @@ void loop(void) {
     }
   }
 
+  
+  if (!sensorFound){
+    if ( !Ds.search(Addr)) {
+      Ds.reset_search();
+      if (!Ds.search(Addr)) {
+        Serial.print("Error=Sensor not found!;");  
+        Lcd.clear();
+        Lcd.print("Error=Sensor not found!;");
+        sensorFound = false;
+        return;
+      }else{
+        sensorFound = true; 
+      }
+    }
+  }
+  
+  if (OneWire::crc8( Addr, 7) != Addr[7]) {
+    Serial.print("Error=CRC is not valid!;");
+    Lcd.clear();
+    Lcd.print("Error=CRC is not valid!;");
+    return;
+  }
+  
+  if (timeForSensor > now) {
+    return;
+  } else {
+    if (!SensorConversionStarted) {
+      Ds.reset();
+      Ds.select(Addr);
+      Ds.write(0x44,1);         // start conversion, with parasite power on at the end
+      timeForSensor = now + 2000;
+      SensorConversionStarted = true;
+      return;
+    } else {
+      SensorConversionStarted = false;
+    }
+  }
+
+  
+  
+  //delay(2000);     // maybe 750ms is enough, maybe not //there's no need in parasite power
+
+  present = Ds.reset();
+ 
+  Ds.select(Addr);    
+  Ds.write(0xBE);         // Read Scratchpad
+
+  for ( i = 0; i < 9; i++) {           // we need 9 bytes
+    data[i] = Ds.read();
+  }
+  LowByte = data[0];
+  HighByte = data[1];
+  TReading = (HighByte << 8) + LowByte;
+  SignBit = TReading & 0x8000;  // test most sig bit
+  if (SignBit) // negative
+  {
+    TReading = (TReading ^ 0xffff) + 1; // 2's comp
+  }
+  oldTc_100 = Tc_100;
+  Tc_100 = (6 * TReading) + TReading / 4;    // multiply by (100 * 0.0625) or 6.25
+  if (Tc_100 == 8500){
+    Tc_100 = oldTc_100;
+    Serial.print("Error: no answer from serial;");
+  }
+  Whole = Tc_100 / 100;  // separate off the whole and fractional portions
+  Fract = Tc_100 % 100;
+
+  //Formatting output information
+  OutputString = String("");
+  OutputString = OutputString + ":";
+
+  if (SignBit) // If its negative
+  {
+    OutputString = OutputString +"-";
+  }
+  OutputString = OutputString + Whole;
+  OutputString = OutputString + ".";
+  if (Fract < 10)
+  {
+    OutputString = OutputString +"0";
+  }
+  OutputString = OutputString + Fract;
+  OutputString = OutputString + ";\n";
+  Lcd.clear();
+  Lcd.print(OutputString);
+  //Serial.print(OutputString);
+
+ 
 }
 
 /*
@@ -268,10 +300,11 @@ void sendStatus() {
   Serial.print("; Ten = ");
   if (TenTurnedOn) {
     Serial.print("1");
-  } else {
+  } 
+  else {
     Serial.print("0");
   }
-  Serial.print(';\n');
+  Serial.print(";\n");
 }
 
 /*
@@ -315,4 +348,5 @@ void sendStatus() {
  
  }
  */
+
 
