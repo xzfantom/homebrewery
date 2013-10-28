@@ -14,9 +14,9 @@ public class COMTalker {
 		// Do nothing yet
 	}
 
-	public COMTalker(String SPN, Dispatcher hb) {
+	public COMTalker(String SPN, Dispatcher ds) {
 		SerialPortNumber = SPN;
-		dispatcher = hb;
+		dispatcher = ds;
 	}
 
 	public void setSPN(String SPN) {

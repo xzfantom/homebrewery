@@ -30,7 +30,7 @@ public class Dispatcher {
 	}
 	
 	public void processCOMMessage (String data) {
-		dataStorage.GetData(data);
+		dataStorage.getData(data);
 	}
 
 	public void sendCOMMessage(String S) {

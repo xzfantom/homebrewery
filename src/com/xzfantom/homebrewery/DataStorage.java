@@ -40,9 +40,9 @@ public class DataStorage {
 			stmt = c.createStatement();
 			String sql = "CREATE TABLE EVENTS "
 					+ "(ID INT PRIMARY KEY     NOT NULL, "
-					+ " NAME           TEXT    NOT NULL, "
-					+ " AGE            INT     NOT NULL, "
-					+ " ADDRESS        CHAR(50), " + " SALARY         REAL)";
+					+ " TYPE           INT    NOT NULL, "
+					+ " DATE           DATE     NOT NULL, "
+					+ " MESSAGE        TEXT";
 			stmt.executeUpdate(sql);
 			stmt.close();
 		} catch (Exception e) {
@@ -51,7 +51,7 @@ public class DataStorage {
 		}
 	}
 
-	public void GetData(String S) {
+	public void getData(String S) {
 		//TODO saving data on disk
 	}
 
