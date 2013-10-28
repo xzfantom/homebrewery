@@ -4,19 +4,20 @@ import java.sql.*;
 
 public class DataStorage {
 	private Connection c = null;
-	private static CoreWindow coreWindow;
+	//private static CoreWindow coreWindow;
+	private Dispatcher dispatcher;
 
-	public DataStorage(CoreWindow cw) {
+	public DataStorage(Dispatcher ds) {
 
-		coreWindow = cw;
+		dispatcher = ds;
 	}
 
 	public DataStorage() {
 
 	}
 
-	public void setCoreWindow(CoreWindow cw) {
-		coreWindow = cw;
+	public void setDispatcher(Dispatcher cw) {
+		dispatcher = cw;
 	}
 
 	public boolean Connect() {
@@ -52,7 +53,7 @@ public class DataStorage {
 	}
 
 	public void GetData(String S) {
-		coreWindow.GetData(S);
+		//TODO saving data on disk
 	}
 
 }

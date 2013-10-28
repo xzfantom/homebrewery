@@ -26,7 +26,8 @@ import javax.swing.border.LineBorder;
 public class CoreWindow extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private static COMTalker comTalker;
+	//private static COMTalker comTalker;
+	private Dispatcher dispatcher;
 	private JTextArea textArea = new JTextArea();
 	private JLabel statusbar = new JLabel(" Statusbar");
 
@@ -109,12 +110,12 @@ public class CoreWindow extends JFrame {
 		textArea.append(S);
 	}
 
-	public void SetCOMTalker(COMTalker ct) {
-		comTalker = ct;
+	public void setDispatcher(Dispatcher ds) {
+		dispatcher = ds;
 	}
 	
 	private void SendData(String S){
-		comTalker.SendMessage(S);
+		dispatcher.sendCOMMessage(S);
 	}
 	
 	protected JComponent makeTextPanel(String text) {

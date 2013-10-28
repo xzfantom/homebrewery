@@ -7,24 +7,24 @@ import jssc.SerialPortException;
 
 public class COMTalker {
 	private static SerialPort serialPort;
-	private static DataStorage dataStorage;
+	private static Dispatcher dispatcher;
 	private String SerialPortNumber;
 
 	public COMTalker() {
 		// Do nothing yet
 	}
 
-	public COMTalker(String SPN, DataStorage ds) {
+	public COMTalker(String SPN, Dispatcher hb) {
 		SerialPortNumber = SPN;
-		dataStorage = ds;
+		dispatcher = hb;
 	}
 
 	public void setSPN(String SPN) {
 		SerialPortNumber = SPN;
 	}
 
-	public void setDS(DataStorage ds) {
-		dataStorage = ds;
+	public void setDispatcher(Dispatcher ds) {
+		dispatcher = ds;
 	}
 
 	public boolean IsConnected() {
@@ -89,7 +89,7 @@ public class COMTalker {
 					String data = serialPort.readString(event.getEventValue());
 					// serialPort.writeString("status;");
 					System.out.println(data);
-					dataStorage.GetData(data);
+					dispatcher.processCOMMessage(data);
 				} catch (SerialPortException ex) {
 					System.out.println(ex);
 				}
