@@ -6,7 +6,7 @@ import jssc.SerialPortEventListener;
 import jssc.SerialPortException;
 
 public class COMTalker {
-	private static SerialPort serialPort;
+	private static SerialPort serialPort = null;
 	private static Dispatcher dispatcher;
 	private String SerialPortNumber;
 
@@ -35,6 +35,7 @@ public class COMTalker {
 		SerialPortNumber = SPN;
 
 		serialPort = new SerialPort(SerialPortNumber);
+
 		try {
 			serialPort.openPort();
 			serialPort.setParams(SerialPort.BAUDRATE_9600,
@@ -69,7 +70,7 @@ public class COMTalker {
 	
 	public boolean SendMessage(String S) {
 		boolean result = false;
-		if (serialPort.isOpened()) {
+		if (null != serialPort && serialPort.isOpened()) {
 			try{
 				result = serialPort.writeString(S);
 			} catch (SerialPortException ex) {

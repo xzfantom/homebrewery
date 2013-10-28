@@ -24,12 +24,9 @@ public class Dispatcher {
 			}
 		}); // грустный плачущий смайлик с бородой
 
-		dataStorage.setDispatcher(this);
-
+		coreWindow.setDispatcher(this);
 		comTalker.setSPN(configurator.getProperty("COMPort"));
 		comTalker.setDispatcher(this);
-
-		coreWindow.setDispatcher(this);
 	}
 	
 	public void processCOMMessage (String data) {
@@ -37,7 +34,10 @@ public class Dispatcher {
 	}
 
 	public void sendCOMMessage(String S) {
-		comTalker.SendMessage(S);
+		coreWindow.getData(S + "\n");
+		if (!comTalker.SendMessage(S)) {
+			coreWindow.getData("Message not sent!");
+		}
 	}
 
 }

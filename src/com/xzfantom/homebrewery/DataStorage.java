@@ -4,20 +4,10 @@ import java.sql.*;
 
 public class DataStorage {
 	private Connection c = null;
-	//private static CoreWindow coreWindow;
-	private Dispatcher dispatcher;
-
-	public DataStorage(Dispatcher ds) {
-
-		dispatcher = ds;
-	}
-
+	private String fileName;
+	
 	public DataStorage() {
 
-	}
-
-	public void setDispatcher(Dispatcher cw) {
-		dispatcher = cw;
 	}
 
 	public boolean Connect() {
@@ -25,7 +15,7 @@ public class DataStorage {
 
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:homebrewery.db");
+			c = DriverManager.getConnection("jdbc:sqlite:" + fileName);
 			System.out.println("Opened database successfully");
 			result = true;
 		} catch (Exception e) {
@@ -34,8 +24,17 @@ public class DataStorage {
 		}
 		return result;
 	}
+	
+	public void setFileName(String S){
+		fileName = S.replace("\\", "/");
+	}
+	
+	public boolean Connect(String fn) {
+		setFileName(fn);
+		return Connect();
+	}
 
-	public void CreateDatabase() {
+	private void CreateDatabase() {
 		Statement stmt = null;
 		try {
 			stmt = c.createStatement();

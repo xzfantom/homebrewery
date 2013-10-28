@@ -16,8 +16,10 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -28,9 +30,13 @@ public class CoreWindow extends JFrame {
 	private static final long serialVersionUID = 1L;
 	//private static COMTalker comTalker;
 	private Dispatcher dispatcher;
-	private JTextArea textArea = new JTextArea();
+	
+	private JTextArea consoleOutput = new JTextArea();
 	private JLabel statusbar = new JLabel(" Statusbar");
-
+	private JTextField consoleInput = new JTextField();
+	
+	private InputConsoleHandler inputConsoleHandler = null;
+	
 	public CoreWindow() {
 
 		initUI();
@@ -83,15 +89,18 @@ public class CoreWindow extends JFrame {
 		JTabbedPane tabbedPane = new JTabbedPane();
 		
 		JComponent graphicPanel = makeTextPanel("graphic panel");
-		graphicPanel.add(textArea, BorderLayout.CENTER);
 		tabbedPane.addTab("Graphic", graphicPanel);
 		
 		JComponent consolePanel = makeTextPanel("console panel");
-		//graphicPanel.add(textArea, BorderLayout.CENTER);
+		final JScrollPane scrollConsoleOutput = new JScrollPane(consoleOutput);
+		consolePanel.add(scrollConsoleOutput, BorderLayout.CENTER);
+		consolePanel.add(consoleInput, BorderLayout.CENTER);
+		inputConsoleHandler = new InputConsoleHandler();
+		consoleInput.addActionListener(inputConsoleHandler);
+		
 		tabbedPane.addTab("Console", consolePanel);
 		
 		JComponent settingsPanel = makeTextPanel("settings panel");
-		//graphicPanel.add(textArea, BorderLayout.CENTER);
 		tabbedPane.addTab("Settings", settingsPanel);
 		
 		add(tabbedPane, BorderLayout.CENTER);
@@ -105,23 +114,33 @@ public class CoreWindow extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
 	}
+	
+	private class InputConsoleHandler implements ActionListener {
 
-	public void GetData(String S) {
-		textArea.append(S);
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			sendData(e.getActionCommand());
+			consoleInput.setText("");
+		}
+		
+	}
+
+	public void getData(String S) {
+		consoleOutput.append(S);
+	}
+	
+	private void sendData(String S){
+		dispatcher.sendCOMMessage(S);
 	}
 
 	public void setDispatcher(Dispatcher ds) {
 		dispatcher = ds;
-	}
-	
-	private void SendData(String S){
-		dispatcher.sendCOMMessage(S);
-	}
+	}	
 	
 	protected JComponent makeTextPanel(String text) {
         JPanel panel = new JPanel(false);
         
-        panel.setLayout(new GridLayout(1, 1));
+        panel.setLayout(new GridLayout(2, 1));
         
         return panel;
     }
