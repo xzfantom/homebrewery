@@ -2,12 +2,24 @@
 #include <OneWire.h>
 #include <LiquidCrystal.h>
 
+//PID regulator
+#define RelayPin 6
+#define TenPin 2
+#define OneWirePin 11
+
 // DS18S20 Temperature chip i/o
-OneWire Ds(11);  // on pin 11
-int TenPin = 2;
-LiquidCrystal Lcd(8, 9, 4, 5, 6, 7); //Display
+OneWire Ds(OneWirePin);
 int HighByte, LowByte, TReading, SignBit, Tc_100, Whole, Fract, oldTc_100; //Readings from OneWire
 byte Addr[8]; //Adres of OneWire temperature sensor
+//Display
+LiquidCrystal Lcd(8, 9, 4, 5, 6, 7); 
+//PID for heater
+double Setpoint, Input, Output;
+//Specify the links and initial tuning parameters
+PID myPID(&Input, &Output, &Setpoint,2,5,1, DIRECT);
+int WindowSize = 5000;
+unsigned long windowStartTime;
+
 String OutputString; //String fo output on Serial
 int LowTemp, HighTemp; //Values for thermostat
 int Mode, t1,t2, pt; //Current workflow
@@ -16,14 +28,6 @@ int ErrorCode; //Different error codes:
 String InputString = "";         // a string to hold incoming data
 boolean StringComplete = false;  // whether the string is complete
 boolean TenTurnedOn;
-//PID regulator
-#define RelayPin 6
-//Define Variables we'll be connecting to
-double Setpoint, Input, Output;
-//Specify the links and initial tuning parameters
-PID myPID(&Input, &Output, &Setpoint,2,5,1, DIRECT);
-int WindowSize = 5000;
-unsigned long windowStartTime;
 unsigned long now;
 unsigned long timeForSensor;
 boolean SensorConversionStarted = false;
@@ -33,22 +37,31 @@ boolean sensorFound = false;
 void setup(void) {
   // initialize inputs/outputs
   // start serial port
-  ErrorCode = 0;
+  ErrorCode = 0; //not in use
   Mode = 0;
   Serial.begin(9600);
   InputString.reserve(200);
   Lcd.begin(16, 2);
-  //if ( !Ds.search(Addr)) {
-  Ds.reset_search();
-  // ErrorCode = 100;
-  //}
-  TenTurnedOn = false;
-  pinMode(TenPin, OUTPUT); 
-
-  //PID regulator
-  digitalWrite(TenPin,HIGH);
-      TenTurnedOn = false;
+  if (!sensorFound){
+    if ( !Ds.search(Addr)) {
+      Ds.reset_search();
+      if (!Ds.search(Addr)) {
+        Serial.print("Error=Sensor not found!;");  
+        Lcd.clear();
+        Lcd.print("Error=Sensor not found!;");
+        sensorFound = false;
+        return;
+      }else{
+        sensorFound = true; 
+      }
+    }
+  }
   
+  pinMode(TenPin, OUTPUT);
+  digitalWrite(TenPin,HIGH);
+  TenTurnedOn = false;
+  
+  //PID
   windowStartTime = millis();
   //initialize the variables we're linked to
   Setpoint = 100;
@@ -69,9 +82,8 @@ void loop(void) {
   if (StringComplete == true)
   {
     int eop;
-//    Serial.print(InputString);
     String part, command, value;
-    //Getting information from input string    
+  
     while (InputString != "")
     {
       value = "";
@@ -126,49 +138,39 @@ void loop(void) {
     }
     StringComplete = false;
   }
+  
   //Main workflow
-  if (Mode == 0)
-  {
+  if (Mode == 0){
     //Turn off heater
     digitalWrite(TenPin, HIGH);
     TenTurnedOn = false;
-  }
-  else if (Mode == 1)
-  {
+  } else if (Mode == 1) {
     //Turn on heater
     digitalWrite(TenPin, LOW);
     TenTurnedOn = true;
-  } 
-  else if (Mode == 2)
-  {
-    /*if (t1 * 100 > Tc_100)
-     {
-     digitalWrite(TenPin, LOW);
-     TenTurnedOn = true;
-     }
-     else
-     {
-     digitalWrite(TenPin, HIGH);
-     TenTurnedOn = false;
-     } */
+  } else if (Mode == 2) {
     Input = Tc_100;
     Setpoint = t1*100;
     myPID.Compute();
 
-    if(now - windowStartTime>WindowSize)
-    { //time to shift the Relay Window
+    if(now - windowStartTime>WindowSize)  { 
+    //time to shift the Relay Window
       windowStartTime += WindowSize;
-    }
-    if(Output > now - windowStartTime) 
-    {
+    } if(Output > now - windowStartTime) {
       digitalWrite(TenPin,LOW);
       TenTurnedOn = true;
-    }
-    else 
-    {
+    } else {
       digitalWrite(TenPin,HIGH);
       TenTurnedOn = false;
     }
+  } else if (Mode == 3) {
+	  if (t1 * 100 > Tc_100) {
+	    digitalWrite(TenPin, LOW);
+	    TenTurnedOn = true;
+	  } else {
+	    digitalWrite(TenPin, HIGH);
+	    TenTurnedOn = false;
+      } 
   }
 
   
@@ -256,9 +258,6 @@ void loop(void) {
   OutputString = OutputString + ";\n";
   Lcd.clear();
   Lcd.print(OutputString);
-  //Serial.print(OutputString);
-
- 
 }
 
 /*
@@ -306,47 +305,3 @@ void sendStatus() {
   }
   Serial.print(";\n");
 }
-
-/*
-#include <PID_v1.h>
- #define RelayPin 6
- 
- //Define Variables we'll be connecting to
- double Setpoint, Input, Output;
- 
- //Specify the links and initial tuning parameters
- PID myPID(&Input, &Output, &Setpoint,2,5,1, DIRECT);
- 
- int WindowSize = 5000;
- unsigned long windowStartTime;
- void setup()
- {
- windowStartTime = millis();
- 
- //initialize the variables we're linked to
- Setpoint = 100;
- 
- //tell the PID to range between 0 and the full window size
- myPID.SetOutputLimits(0, WindowSize);
- 
- //turn the PID on
- myPID.SetMode(AUTOMATIC);
- }
- 
- void loop()
- {
- Input = analogRead(0);
- myPID.Compute();
- 
- unsigned long now = millis();
- if(now - windowStartTime>WindowSize)
- { //time to shift the Relay Window
- windowStartTime += WindowSize;
- }
- if(Output > now - windowStartTime) digitalWrite(RelayPin,HIGH);
- else digitalWrite(RelayPin,LOW);
- 
- }
- */
-
-
