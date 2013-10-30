@@ -26,6 +26,18 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import java.awt.Canvas;
+import javax.swing.SwingConstants;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+import javax.swing.border.LineBorder;
+import java.awt.Color;
+import javax.swing.border.MatteBorder;
+import javax.swing.border.EtchedBorder;
+import java.awt.Dimension;
+import javax.swing.JRadioButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class window extends JFrame {
 
@@ -51,6 +63,7 @@ public class window extends JFrame {
 	 * Create the frame.
 	 */
 	public window() {
+		setTitle("Homebrewery");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
@@ -91,7 +104,7 @@ public class window extends JFrame {
 		splitPane.setOneTouchExpandable(true);
 		splitPane.setAlignmentY(Component.CENTER_ALIGNMENT);
 		splitPane.setAlignmentX(Component.CENTER_ALIGNMENT);
-		splitPane.setResizeWeight(10.0);
+		splitPane.setResizeWeight(0.0);
 		panel.add(splitPane);
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
@@ -113,8 +126,58 @@ public class window extends JFrame {
 		
 		JPanel commandPanel = new JPanel();
 		splitPane.setLeftComponent(commandPanel);
-		commandPanel.setLayout(null);
-		splitPane.setDividerLocation(250);
-		splitPane.setDividerLocation(-1.0);
+		commandPanel.setLayout(new GridLayout(3, 1, 0, 0));
+		
+		JPanel panel_1 = new JPanel();
+		panel_1.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		panel_1.setMaximumSize(new Dimension(0, 10));
+		commandPanel.add(panel_1);
+		panel_1.setLayout(new GridLayout(4, 2, 0, 0));
+		
+		JLabel lblTemp = new JLabel("\u0422\u0435\u043C\u043F\u0435\u0440\u0430\u0442\u0443\u0440\u0430: ");
+		lblTemp.setHorizontalAlignment(SwingConstants.LEFT);
+		panel_1.add(lblTemp);
+		
+		JLabel temp = new JLabel("100 *C");
+		panel_1.add(temp);
+		
+		JLabel lblTan = new JLabel("\u0422\u044D\u043D:");
+		panel_1.add(lblTan);
+		
+		JLabel tan = new JLabel("Off");
+		panel_1.add(tan);
+		
+		JLabel label = new JLabel("\u0412\u0440\u0435\u043C\u044F \u0432\u0441\u0435\u0433\u043E:");
+		panel_1.add(label);
+		
+		JLabel label_1 = new JLabel("00:00:00");
+		panel_1.add(label_1);
+		
+		JLabel label_2 = new JLabel("\u0412\u0440\u0435\u043C\u044F \u043F\u0430\u0443\u0437\u044B:");
+		panel_1.add(label_2);
+		
+		JLabel label_3 = new JLabel("00:00:00");
+		panel_1.add(label_3);
+		
+		JPanel panel_2 = new JPanel();
+		panel_2.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		commandPanel.add(panel_2);
+		
+		JRadioButton radioButton = new JRadioButton("\u0412\u043A\u043B\u044E\u0447\u0435\u043D");
+		
+		panel_2.add(radioButton);
+		
+		JRadioButton radioButton_1 = new JRadioButton("\u0410\u0432\u0442\u043E\u043C\u0430\u0442");
+		panel_2.add(radioButton_1);
+		
+		JRadioButton radioButton_2 = new JRadioButton("\u0412\u044B\u043A\u043B\u044E\u0447\u0435\u043D");
+		panel_2.add(radioButton_2);
+		
+		
+		
+		JPanel panel_3 = new JPanel();
+		panel_3.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		commandPanel.add(panel_3);
+		splitPane.setDividerLocation(1.0);
 	}
 }
