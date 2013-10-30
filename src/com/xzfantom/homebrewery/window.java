@@ -6,6 +6,7 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.BorderFactory;
 import javax.swing.JToolBar;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
@@ -27,6 +28,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import java.awt.Canvas;
 import javax.swing.SwingConstants;
+
+import java.awt.Graphics;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
@@ -38,10 +41,12 @@ import java.awt.Dimension;
 import javax.swing.JRadioButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.ButtonGroup;
 
 public class window extends JFrame {
 
 	private JPanel contentPane;
+	private final ButtonGroup buttonGroup = new ButtonGroup();
 
 	/**
 	 * Launch the application.
@@ -65,7 +70,7 @@ public class window extends JFrame {
 	public window() {
 		setTitle("Homebrewery");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 450, 427);
 		contentPane = new JPanel();
 		contentPane.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -111,12 +116,10 @@ public class window extends JFrame {
 		splitPane.setRightComponent(tabbedPane);
 		tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 		
-		JPanel graphicPanel = new JPanel();
+		  
+		GraphPanel graphicPanel = new GraphPanel();
 		tabbedPane.addTab("Graphic", null, graphicPanel, null);
 		graphicPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-		
-		Canvas canvas = new Canvas();
-		graphicPanel.add(canvas);
 		
 		JPanel consolePanel = new JPanel();
 		tabbedPane.addTab("Console", null, consolePanel, null);
@@ -162,15 +165,22 @@ public class window extends JFrame {
 		JPanel panel_2 = new JPanel();
 		panel_2.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		commandPanel.add(panel_2);
+		panel_2.setLayout(new GridLayout(0, 1, 0, 0));
+		
+		JLabel label_4 = new JLabel("\u0423\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u0435 \u0442\u044D\u043D\u043E\u043C:");
+		panel_2.add(label_4);
 		
 		JRadioButton radioButton = new JRadioButton("\u0412\u043A\u043B\u044E\u0447\u0435\u043D");
-		
+		buttonGroup.add(radioButton);
 		panel_2.add(radioButton);
 		
 		JRadioButton radioButton_1 = new JRadioButton("\u0410\u0432\u0442\u043E\u043C\u0430\u0442");
+		radioButton_1.setSelected(true);
+		buttonGroup.add(radioButton_1);
 		panel_2.add(radioButton_1);
 		
 		JRadioButton radioButton_2 = new JRadioButton("\u0412\u044B\u043A\u043B\u044E\u0447\u0435\u043D");
+		buttonGroup.add(radioButton_2);
 		panel_2.add(radioButton_2);
 		
 		
@@ -179,5 +189,24 @@ public class window extends JFrame {
 		panel_3.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		commandPanel.add(panel_3);
 		splitPane.setDividerLocation(1.0);
+		
+		
+	}
+	
+	class GraphPanel extends JPanel {
+		public GraphPanel() {
+	        setBorder(BorderFactory.createLineBorder(Color.black));
+	    }
+
+	    public Dimension getPreferredSize() {
+	        return new Dimension(250,200);
+	    }
+
+	    public void paintComponent(Graphics g) {
+	        super.paintComponent(g);       
+
+	        // Draw Text
+	        g.drawString("This is my custom Panel!",10,20);
+	    }
 	}
 }
