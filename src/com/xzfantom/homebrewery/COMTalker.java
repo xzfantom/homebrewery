@@ -8,7 +8,7 @@ import jssc.SerialPortException;
 public class COMTalker {
 	private static SerialPort serialPort = null;
 	private static Dispatcher dispatcher;
-	private String SerialPortNumber;
+	private String SerialPortNumber="COM10";
 
 	public COMTalker() {
 		// Do nothing yet
@@ -89,7 +89,8 @@ public class COMTalker {
 				try {
 					String data = serialPort.readString(event.getEventValue());
 					// serialPort.writeString("status;");
-					System.out.println(data);
+					//System.out.println(data);
+					System.out.println(String.valueOf(event.getEventValue())+ " " + data);
 					dispatcher.processCOMMessage(data);
 				} catch (SerialPortException ex) {
 					System.out.println(ex);

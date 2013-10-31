@@ -41,29 +41,35 @@ import java.awt.Dimension;
 import javax.swing.JRadioButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+
 import javax.swing.ButtonGroup;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.JButton;
 
 public class window extends JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private final ButtonGroup buttonGroup = new ButtonGroup();
+	private JTextField textField;
+	private Dispatcher dispatcher = null;
+	private JLabel temp = null;
+	private JLabel tan = null;
+	private JLabel timeOverall;
+	private JLabel timePause;
+	private JTextArea textArea = null;
+	
 
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					window frame = new window();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
+	
 	/**
 	 * Create the frame.
 	 */
@@ -117,15 +123,41 @@ public class window extends JFrame {
 		tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 		
 		  
+		
+		
 		GraphPanel graphicPanel = new GraphPanel();
 		tabbedPane.addTab("Graphic", null, graphicPanel, null);
 		graphicPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
+		
 		JPanel consolePanel = new JPanel();
 		tabbedPane.addTab("Console", null, consolePanel, null);
+		consolePanel.setLayout(new BorderLayout(0, 0));
+		
+		textField = new JTextField();
+		textField.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				sendData(arg0.getActionCommand());
+				textField.setText("");
+			}
+		});
+		consolePanel.add(textField, BorderLayout.SOUTH);
+		textField.setColumns(10);
+		
+		textArea = new JTextArea();
+		textArea.setEditable(false);
+		JScrollPane scrollPane = new JScrollPane(textArea);
+		scrollPane.setAutoscrolls(true);
+		
+		consolePanel.add(scrollPane, BorderLayout.CENTER);
+		
+		
+		
 		
 		JPanel settingsPanel = new JPanel();
 		tabbedPane.addTab("Settings", null, settingsPanel, null);
+		
+		
 		
 		JPanel commandPanel = new JPanel();
 		splitPane.setLeftComponent(commandPanel);
@@ -141,26 +173,26 @@ public class window extends JFrame {
 		lblTemp.setHorizontalAlignment(SwingConstants.LEFT);
 		panel_1.add(lblTemp);
 		
-		JLabel temp = new JLabel("100 *C");
+		temp = new JLabel("100 *C");
 		panel_1.add(temp);
 		
 		JLabel lblTan = new JLabel("\u0422\u044D\u043D:");
 		panel_1.add(lblTan);
 		
-		JLabel tan = new JLabel("Off");
+		tan = new JLabel("Off");
 		panel_1.add(tan);
 		
 		JLabel label = new JLabel("\u0412\u0440\u0435\u043C\u044F \u0432\u0441\u0435\u0433\u043E:");
 		panel_1.add(label);
 		
-		JLabel label_1 = new JLabel("00:00:00");
-		panel_1.add(label_1);
+		timeOverall = new JLabel("00:00:00");
+		panel_1.add(timeOverall);
 		
 		JLabel label_2 = new JLabel("\u0412\u0440\u0435\u043C\u044F \u043F\u0430\u0443\u0437\u044B:");
 		panel_1.add(label_2);
 		
-		JLabel label_3 = new JLabel("00:00:00");
-		panel_1.add(label_3);
+		timePause = new JLabel("00:00:00");
+		panel_1.add(timePause);
 		
 		JPanel panel_2 = new JPanel();
 		panel_2.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
@@ -188,12 +220,50 @@ public class window extends JFrame {
 		JPanel panel_3 = new JPanel();
 		panel_3.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		commandPanel.add(panel_3);
+		
+		JButton btnConnect = new JButton("Connect");
+		btnConnect.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (null != dispatcher){
+					dispatcher.Connect();
+				} else {
+					appendToConsole("dispatcher is null");
+				}
+			}
+		});
+		panel_3.add(btnConnect);
 		splitPane.setDividerLocation(1.0);
 		
 		
 	}
 	
+	public void setDispatcher (Dispatcher ds){
+		dispatcher = ds;
+	}
+	
+	public void updateInfo (timeTemp tt){
+		temp.setText(String.valueOf(tt.temp)+" *C");
+		tan.setText(String.valueOf(tt.heaterOn));
+		timeOverall.setText(String.valueOf(tt.time));
+	}
+	
+	public void appendToConsole (String S){
+		//textArea.append(S+"\n");
+		textArea.setText(S + "\n" + textArea.getText());
+	}
+	
+	private void sendData(String S){
+		dispatcher.sendCOMMessage(S);
+	}
+	
 	class GraphPanel extends JPanel {
+		
+		private static final long serialVersionUID = 1L;
+		private static final int startX = 10;
+		private static final int startY = 600;
+		private int maxX = 60;
+		private static final int maxY = 30;
+
 		public GraphPanel() {
 	        setBorder(BorderFactory.createLineBorder(Color.black));
 	    }
@@ -206,7 +276,19 @@ public class window extends JFrame {
 	        super.paintComponent(g);       
 
 	        // Draw Text
-	        g.drawString("This is my custom Panel!",10,20);
+	        g.drawString("Температура",10,20);
+	        ArrayList<timeTemp> al = new ArrayList<timeTemp>(240);
+	        g.setColor(new Color(0,0,0));
+	        maxX = getWidth()-startX;
+	        g.drawLine(startX, startY, maxX, startY);
+	        g.drawLine(startX, startY, startX, maxY);
+	        for (timeTemp item: al){
+	        	
+	        }
 	    }
+	}
+
+	public void getData(String string) {
+		appendToConsole(string);		
 	}
 }
