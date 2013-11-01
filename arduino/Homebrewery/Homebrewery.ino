@@ -306,6 +306,6 @@ void sendStatus() {
   else {
 	  OutputString = OutputString + "0";
   }
-  OutputString = OutputString + ";\n";
+  OutputString = OutputString + ";";
   sendMessage(OutputString);
 }
