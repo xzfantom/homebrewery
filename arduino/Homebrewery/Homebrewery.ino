@@ -20,7 +20,7 @@ PID myPID(&Input, &Output, &Setpoint,2,5,1, DIRECT);
 int WindowSize = 5000;
 unsigned long windowStartTime;
 
-String OutputString; //String fo output on Serial
+String OutputString; //String for output on Serial
 int LowTemp, HighTemp; //Values for thermostat
 int Mode, t1,t2, pt; //Current workflow
 int ErrorCode; //Different error codes:
@@ -284,24 +284,26 @@ void serialEvent() {
 }
 
 void sendStatus() {
-  Serial.print("Mode = ");
-  Serial.print(Mode);
-  Serial.print("; t1 = ");
-  Serial.print(t1);
-  Serial.print("; t2 = ");
-  Serial.print(t2);
-  Serial.print("; pt = ");
-  Serial.print(pt);
-  Serial.print("; Tc_100 = ");
-  Serial.print(Tc_100);
-  Serial.print("; time = ");
-  Serial.print(now);
-  Serial.print("; Ten = ");
+  OutputString = String("");
+  OutputString = OutputString + "Mode = ";
+  OutputString = OutputString + Mode;
+  OutputString = OutputString + "; t1 = ";
+  OutputString = OutputString + t1;
+  OutputString = OutputString + "; t2 = ";
+  OutputString = OutputString + t2;
+  OutputString = OutputString + "; pt = ";
+  OutputString = OutputString + pt;
+  OutputString = OutputString + "; Tc_100 = ";
+  OutputString = OutputString + Tc_100;
+  OutputString = OutputString + "; time = ";
+  OutputString = OutputString + now;
+  OutputString = OutputString + "; Ten = ";
   if (TenTurnedOn) {
-    Serial.print("1");
+	  OutputString = OutputString + "1";
   } 
   else {
-    Serial.print("0");
+	  OutputString = OutputString + "0";
   }
-  Serial.print(";\n");
+  OutputString = OutputString + ";\n";
+  Serial.print(OutputString);
 }

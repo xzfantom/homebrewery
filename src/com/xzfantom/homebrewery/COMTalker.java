@@ -88,8 +88,6 @@ public class COMTalker {
 			if (event.isRXCHAR() && event.getEventValue() > 0) {
 				try {
 					String data = serialPort.readString(event.getEventValue());
-					// serialPort.writeString("status;");
-					//System.out.println(data);
 					System.out.println(String.valueOf(event.getEventValue())+ " " + data);
 					dispatcher.processCOMMessage(data);
 				} catch (SerialPortException ex) {

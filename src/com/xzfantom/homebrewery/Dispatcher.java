@@ -27,11 +27,11 @@ public class Dispatcher {
 		comTalker.setDispatcher(this);
 		coreWindow.setDispatcher(this);
 		ActionListener taskPerformer = new ActionListener() {
-					@Override
+			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				comTalker.SendMessage("status;");				
 			}
-		  };
+		};
 
 		timer = new Timer(1000,taskPerformer);
 		SwingUtilities.invokeLater(new Runnable() {
