@@ -12,6 +12,7 @@ public class Dispatcher {
 	private static COMTalker comTalker = new COMTalker();
 	private static Configurator configurator = new Configurator();
 	private Timer timer = null;
+	private String messageInProcess;
 
 	public static void main(String[] args) {
 
@@ -42,8 +43,24 @@ public class Dispatcher {
 	}
 	
 	public void processCOMMessage (String data) {
-		dataStorage.getData(data);
-		coreWindow.appendToConsole(data);
+		String message;
+		coreWindow.appendToConsole(">" + data);
+		messageInProcess = messageInProcess + data;
+		if (!messageInProcess.contains("*")){
+			coreWindow.getData("Garbage from COM: " + messageInProcess);
+			messageInProcess = "";
+		} else if (!messageInProcess.startsWith("*")) {
+			coreWindow.getData("Garbage from COM: " + messageInProcess.substring(0, messageInProcess.indexOf("*")-1));
+			messageInProcess = messageInProcess.substring(messageInProcess.indexOf("*"));
+		}
+		if (messageInProcess.contains("#")){
+			message = messageInProcess.substring(0, messageInProcess.indexOf("#"));
+			messageInProcess = messageInProcess.substring(messageInProcess.indexOf("#")+1);
+			dataStorage.getData(message);
+			coreWindow.appendToConsole(message);
+		}
+
+		
 	}
 
 	public void sendCOMMessage(String S) {
