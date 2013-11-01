@@ -46,11 +46,10 @@ void setup(void) {
     if ( !Ds.search(Addr)) {
       Ds.reset_search();
       if (!Ds.search(Addr)) {
-        Serial.print("Error=Sensor not found!;");  
+        sendMessage("Error=Sensor not found!;");  
         Lcd.clear();
         Lcd.print("Error=Sensor not found!;");
         sensorFound = false;
-        return;
       }else{
         sensorFound = true; 
       }
@@ -178,7 +177,7 @@ void loop(void) {
     if ( !Ds.search(Addr)) {
       Ds.reset_search();
       if (!Ds.search(Addr)) {
-        Serial.print("Error=Sensor not found!;");  
+    	sendMessage("Error=Sensor not found!;");  
         Lcd.clear();
         Lcd.print("Error=Sensor not found!;");
         sensorFound = false;
@@ -190,7 +189,7 @@ void loop(void) {
   }
   
   if (OneWire::crc8( Addr, 7) != Addr[7]) {
-    Serial.print("Error=CRC is not valid!;");
+    sendMessage("Error=CRC is not valid!;");
     Lcd.clear();
     Lcd.print("Error=CRC is not valid!;");
     return;
@@ -235,15 +234,14 @@ void loop(void) {
   Tc_100 = (6 * TReading) + TReading / 4;    // multiply by (100 * 0.0625) or 6.25
   if (Tc_100 == 8500){
     Tc_100 = oldTc_100;
-    Serial.print("Error: no answer from serial;");
+    sendMessage("Error: no answer from serial;");
   }
   Whole = Tc_100 / 100;  // separate off the whole and fractional portions
   Fract = Tc_100 % 100;
 
   //Formatting output information
   OutputString = String("");
-  OutputString = OutputString + ":";
-
+ 
   if (SignBit) // If its negative
   {
     OutputString = OutputString +"-";
@@ -283,6 +281,10 @@ void serialEvent() {
   }
 }
 
+void sendMessage(Message) {
+	Serial.print("*"+Message + "#");
+}
+
 void sendStatus() {
   OutputString = String("");
   OutputString = OutputString + "Mode = ";
@@ -305,5 +307,5 @@ void sendStatus() {
 	  OutputString = OutputString + "0";
   }
   OutputString = OutputString + ";\n";
-  Serial.print(OutputString);
+  sendMessage(OutputString);
 }
