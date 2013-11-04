@@ -64,6 +64,7 @@ public class window extends JFrame {
 	private JLabel timeOverall;
 	private JLabel timePause;
 	private JTextArea textArea = null;
+	private ArrayList<timeTemp> al = new ArrayList<timeTemp>(240);
 	
 
 	/**
@@ -273,15 +274,17 @@ public class window extends JFrame {
 	    }
 
 	    public void paintComponent(Graphics g) {
+	    	int oldX, oldY;
 	        super.paintComponent(g);       
 
 	        // Draw Text
 	        g.drawString("Температура",10,20);
-	        ArrayList<timeTemp> al = new ArrayList<timeTemp>(240);
 	        g.setColor(new Color(0,0,0));
 	        maxX = getWidth()-startX;
 	        g.drawLine(startX, startY, maxX, startY);
 	        g.drawLine(startX, startY, startX, maxY);
+	        oldX = startX;
+	        oldY = startY;
 	        for (timeTemp item: al){
 	        	
 	        }
