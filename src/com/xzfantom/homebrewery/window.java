@@ -65,12 +65,9 @@ public class window extends JFrame {
 	private JLabel timePause;
 	private JTextArea textArea = null;
 	private ArrayList<timeTemp> al = new ArrayList<timeTemp>(240);
+	private ArrayList<timeTemp> normalizedDots = new ArrayList<timeTemp>(240);
 	
 
-	/**
-	 * Launch the application.
-	 */
-	
 	/**
 	 * Create the frame.
 	 */
@@ -264,6 +261,13 @@ public class window extends JFrame {
 		private static final int startY = 600;
 		private int maxX = 60;
 		private static final int maxY = 30;
+		private static final int stepX = 5;
+		private static final int stepY = 5;
+		
+		private static final double xKoef = 0.01;
+		private static final double yKoef = 0.01;
+		private static final int delta = 1000;
+		
 
 		public GraphPanel() {
 	        setBorder(BorderFactory.createLineBorder(Color.black));
@@ -275,8 +279,32 @@ public class window extends JFrame {
 
 	    public void paintComponent(Graphics g) {
 	    	int oldX, oldY;
+	    	int oldTime;
+	    	double oldTemp;
+	    	
 	        super.paintComponent(g);       
-
+	        
+	        //normalization of timetemp array;
+	        if (!al.isEmpty()){
+	        	oldTime = al.get(0).time;
+	        	oldTemp = al.get(0).temp;
+	        	normalizedDots.add(new timeTemp(0, oldTemp*yKoef, false));
+	        
+	        	for (timeTemp item:al){
+	        		while (item.time - oldTime >= delta){
+	        			double k, b;
+	        			timeTemp arg0 = new timeTemp();
+	        			arg0.time = oldTime + delta;
+	        			k = (item.temp - oldTemp)/(item.time - oldTime);
+	        			b = oldTemp - k*oldTime;
+	        			arg0.temp = k*arg0.time + b;
+	        			normalizedDots.add(arg0);
+	        			oldTime += delta;
+	        			oldTemp = arg0.temp;
+	        		}	        		        	
+	        	}
+	        }
+	        
 	        // Draw Text
 	        g.drawString("Температура",10,20);
 	        g.setColor(new Color(0,0,0));
@@ -285,8 +313,10 @@ public class window extends JFrame {
 	        g.drawLine(startX, startY, startX, maxY);
 	        oldX = startX;
 	        oldY = startY;
-	        for (timeTemp item: al){
-	        	
+	        for (timeTemp item: normalizedDots){
+	        	g.drawLine(oldX, oldY, oldX+stepX, (int) (item.temp*stepY));
+	        	oldX = oldX + stepX;
+	        	oldY = (int) (item.temp+stepY);
 	        }
 	    }
 	}
